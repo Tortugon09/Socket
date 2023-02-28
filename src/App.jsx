@@ -1,38 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import socketIOClient from 'socket.io-client';
+import {Context, ContextProvider} from "./Context.jsx";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {Mensajes} from "./Mensajes.jsx";
+import {SingIn} from "./SingIn.jsx";
+import Chat from "./Chat.jsx";
 
 function App() {
-    const [mensajes, setMensajes] = useState([]);
-    const [mensaje, setMensaje] = useState('');
-    const [socket] = useState(socketIOClient('http://localhost:1234'));
-
-    useEffect(() => {
-        socket.on('mensaje_recibido', (datos) => {
-            setMensajes([...mensajes, datos]);
-        });
-    }, [mensajes, socket]);
-
-    const enviarMensaje = () => {
-        socket.emit('enviar_mensaje', mensaje);
-        setMensaje('');
-    }
-
-
   return (
       <div>
-          <div>
-              {mensajes.map((mensaje, index) => (
-                  <p key={index}>{mensaje}</p>
-              ))}
-          </div>
-          <div>
-              <input
-                  type="text"
-                  value={mensaje}
-                  onChange={(e) => setMensaje(e.target.value)}
-              />
-              <button onClick={enviarMensaje}>Enviar</button>
-          </div>
+        <BrowserRouter>
+            <ContextProvider>
+                <Routes>
+                    <Route path={"/socket/mensajes"} element={<Mensajes/>} />
+                    <Route path={"/socket"} element={<SingIn/>} />
+                    <Route path={"/socket/chat"} element={<Chat/>} />
+                </Routes>
+            </ContextProvider>
+        </BrowserRouter>
       </div>
   )
 }
