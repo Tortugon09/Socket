@@ -4,7 +4,7 @@ import socketIOClient from 'socket.io-client';
 function App() {
     const [mensajes, setMensajes] = useState([]);
     const [mensaje, setMensaje] = useState('');
-    const [socket] = useState(socketIOClient('http://192.168.137.1:1234'));
+    const [socket] = useState(socketIOClient('http://localhost:1234'));
 
     useEffect(() => {
         socket.on('mensaje_recibido', (datos) => {
