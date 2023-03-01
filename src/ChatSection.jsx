@@ -10,6 +10,7 @@ import * as React from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import {useContext, useEffect, useState} from "react";
 import {Context} from "./Context.jsx";
+import axios from 'axios';
 
 const useStyles = makeStyles({
     table: {
@@ -42,7 +43,7 @@ const useStyles = makeStyles({
 });
 
 export const ChatSection = ({data}) => {
-
+    const [imagenes, setImageData] = useState([]);
     const usuario2 = data.usuario2
     const {socket, User, usuarios, IniciarChat, checador} = useContext(Context)
     const [mensajes, setMensajes] = useState([]);
@@ -91,11 +92,24 @@ export const ChatSection = ({data}) => {
             socket.on('mensaje_recibido', (datos) => {
                 console.log(datos)
                 setMensajes([...mensajes, datos]);
-                console.log(datos)
+                console.log(typeof (datos))
             });
         }
     }, [mensajes, socket]);
-
+    useEffect(() => {
+        if (socket) {
+            socket.on('new_image', (datos) => {
+                handleImageDataReceived(datos)
+                console.log(datos)
+            });
+        }
+    }, [socket]);
+    function handleImageDataReceived(datos) {
+        const arrayBuffer = datos.imagen;
+        const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+        const imageUrl = URL.createObjectURL(blob);
+        setImageData([...imagenes, {imageUrl}]);
+    }
     const enviarMensaje = e => {
         e.preventDefault()
         socket.emit('enviar_mensaje', mensaje);
@@ -104,6 +118,26 @@ export const ChatSection = ({data}) => {
     }
 
     const classes = useStyles();
+
+    const [file, setFile] = useState(null);
+
+    const handleFileChange = (event) => {
+        setFile(event.target.files[0]);
+    };
+
+
+    const handleFileUpload = async () => {
+        console.log(imagenes)
+        try {
+            const formData = new FormData();
+            formData.append('photo', file);
+            await  axios.post('http://localhost:1234/upload', formData);
+            console.log('Archivo subido con éxito');
+            socket.emit('ola', 'dwd');
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
         <Grid item xs={9}>
@@ -134,6 +168,20 @@ export const ChatSection = ({data}) => {
                                 </Grid>
                             </ListItem>
                 ))}
+                {imagenes.map((imagen, index) => (
+                    console.log(User),
+                        console.log(imagen.imageUrl),
+                            <ListItem key={index}>
+                                <Grid container>
+                                    <Grid item xs={12}>
+                                        {imagen && <img src={imagen.imageUrl} />}
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <ListItemText align="right" secondary={User}></ListItemText>
+                                    </Grid>
+                                </Grid>
+                            </ListItem>
+                ))}
             </List>
             <Divider />
             <Grid container className={classes.space}>
@@ -156,7 +204,10 @@ export const ChatSection = ({data}) => {
                         Enviar
                     </Button>
                 </Box>
-                <Button>Enviar Archivo</Button>
+                <div>
+                    <input type="file" name="photo" onChange={handleFileChange} />
+                    <button onClick={handleFileUpload}>Cargar archivo</button>
+                </div>
             </Grid>
         </Grid>
     )

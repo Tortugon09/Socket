@@ -88,7 +88,6 @@ export const ChatSection3 = ({data}) => {
     useEffect(() => {
         if (socket) {
             socket.on('mensaje_grupal', (datos) => {
-                const kg = {datos}
                 setMensajes([...mensajes,datos]);
                 console.log(mensajes)
             });
@@ -108,8 +107,6 @@ export const ChatSection3 = ({data}) => {
         <Grid item xs={9}>
             <List className={classes.messageArea}>
                 {mensajes.map((mensaje, index) => (
-                    console.log(User),
-                        console.log(mensaje.datos),
                         User === mensaje.id ?
                             <ListItem key={index}>
                                 <Grid container>

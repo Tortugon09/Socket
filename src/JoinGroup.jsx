@@ -12,6 +12,9 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {useNavigate} from "react-router-dom";
+import {useContext, useEffect, useState} from "react";
+import {Context} from "./Context.jsx";
 
 function Copyright(props) {
     return (
@@ -29,14 +32,38 @@ function Copyright(props) {
 const theme = createTheme();
 
 export const JoinGroup = () => {
+    const navigate = useNavigate();
+    const {socket, User, usuarios, SetGrupo, Grupo,setChecador, checador} = useContext(Context)
+    const [creategrupo, setCreateGrupo] = useState({
+        nombre: Grupo,
+        usuario: User
+    })
+
+    useEffect(() => {
+        console.log(Grupo)
+        console.log(User)
+        console.log(creategrupo)
+    }, [Grupo, socket]);
+
+    useEffect(() => {
+        setCreateGrupo(
+            {
+                nombre: Grupo,
+                usuario: User
+            }
+        )
+    }, [Grupo]);
+
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        socket.emit('unirse_a_grupo', creategrupo);
+        console.log(creategrupo)
+        navigate('/socket/ChatGrupo')
+        setChecador(checador+1)
+
     };
+
     return (
         <>
             <ThemeProvider theme={theme}>

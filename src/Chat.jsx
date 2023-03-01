@@ -89,6 +89,10 @@ const Chat = () => {
                             >Crear Grupo
                             </Button>
                             <Button
+                                onClick={() => SetIniciarChat({usuario1: User, usuario2: ''})}
+                            >CHAT GENERAL
+                            </Button>
+                            <Button
                                 onClick={() => navigate('/Socket/JoinGrupo')}
                             >Unirse a un Grupo
                             </Button>

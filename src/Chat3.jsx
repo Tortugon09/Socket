@@ -53,7 +53,7 @@ const Chat3 = () => {
 
     useEffect(() => {
         if (socket) {
-            socket.on('mensaje_grupal', (datos) => {
+            socket.on('anuncio_grupal', (datos) => {
                 setAnuncios([...Anuncios, datos]);
                 console.log(datos)
             })
@@ -66,6 +66,11 @@ const Chat3 = () => {
         setChecador(!checador)
         console.log(IniciarChat)
     }
+    const handleSubmmit2 = () => {
+        socket.emit('salir_del_grupo', {usuario: User, nombre: Grupo});
+        navigate('/socket/chat')
+    }
+
     const navigate = useNavigate();
 
     const classes = useStyles();
@@ -90,8 +95,8 @@ const Chat3 = () => {
                     <List>
                         <ListItem button key="RemySharp">
                             <Button
-                                onClick={() => navigate('/Socket/HacerGrupo')}
-                            >Crear Grupo
+                                onClick={() => handleSubmmit2()}
+                            >Salir del grupo
                             </Button>
                         </ListItem>
                     </List>
@@ -117,9 +122,11 @@ const Chat3 = () => {
                             </ListItem>
                         ))}
                     </List>
-                    {Anuncios.map((anuncio, index) => (
-                        <p key={index}>{anuncio}</p>
-                    ))}
+                    <List>
+                        {Anuncios.map((anuncio, index) => (
+                            <p key={index}>{anuncio}</p>
+                        ))}
+                    </List>
                 </Grid>
                 <ChatSection3 data={IniciarChat} />
             </Grid>
