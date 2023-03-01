@@ -7,6 +7,7 @@ export const Context = createContext();
 export const ContextProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const [User, setUser] = useState('');
+    const [Grupo, SetGrupo] = useState('')
 
     useEffect(() => {
         const newSocket = socketIOClient('http://localhost:1234');
@@ -25,7 +26,7 @@ export const ContextProvider = ({ children }) => {
         }
     }, [usuarios, socket]);
 
-    const [checador, setChecador] = useState(true)
+    const [checador, setChecador] = useState(0)
 
 
 
@@ -38,7 +39,9 @@ export const ContextProvider = ({ children }) => {
                 setUser,
                 usuarios,
                 checador,
-                setChecador
+                setChecador,
+                Grupo,
+                SetGrupo
             }}>
             {children}
         </Context.Provider>

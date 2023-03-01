@@ -41,7 +41,7 @@ const useStyles = makeStyles({
     }
 });
 
-export const ChatSection = ({data}) => {
+export const ChatSection2 = ({data}) => {
 
     const usuario2 = data.usuario2
     const {socket, User, usuarios, IniciarChat, checador} = useContext(Context)
@@ -56,9 +56,6 @@ export const ChatSection = ({data}) => {
     });
 
     useEffect(() => {
-        console.log(mensaje)
-        console.log(data)
-        console.log(usuario2)
     }, [mensaje, socket]);
 
     useEffect(() => {
@@ -88,17 +85,18 @@ export const ChatSection = ({data}) => {
 
     useEffect(() => {
         if (socket) {
-            socket.on('mensaje_recibido', (datos) => {
+            socket.on('private_message2', (datos) => {
                 console.log(datos)
                 setMensajes([...mensajes, datos]);
                 console.log(datos)
             });
         }
+        console.log('hola')
     }, [mensajes, socket]);
 
     const enviarMensaje = e => {
         e.preventDefault()
-        socket.emit('enviar_mensaje', mensaje);
+        socket.emit('private_message', mensaje);
         console.log(mensaje)
         setMensaje({...mensaje,['mensaje']: {['id']: User, ['datos']: ''}});
     }

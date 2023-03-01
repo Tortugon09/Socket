@@ -16,8 +16,7 @@ import SendIcon from '@material-ui/icons/Send';
 import {Context} from "./Context.jsx";
 import {Button} from "@material-ui/core";
 import * as React from "react";
-import {ChatSection} from "./ChatSection.jsx";
-import {useNavigate} from "react-router-dom";
+import {ChatSection2} from "./ChatSection2.jsx";
 
 const useStyles = makeStyles({
     table: {
@@ -41,27 +40,34 @@ const useStyles = makeStyles({
 
 
 
-const Chat = () => {
+const Chat2 = () => {
     const {socket, User, usuarios, setChecador, checador} = useContext(Context)
+    const [Anuncios, setAnuncios] = useState([])
     const [IniciarChat, SetIniciarChat] = useState({
         'usuario1': User,
         'usuario2': ''
     })
 
 
+
+
     useEffect(() => {
         if (socket) {
-            socket.emit('obtener_conversaciones', IniciarChat);
+            socket.emit('iniciar_chat', IniciarChat);
+            socket.on('join_room_announcement', (datos) => {
+                console.log(datos)
+                setAnuncios([...Anuncios, datos]);
+                console.log(datos)
+            })
         }
-    }, [IniciarChat, socket]);
+    }, [checador, socket]);
 
 
-    const handleSubmmit = (userd) => {
-        SetIniciarChat({...IniciarChat,['usuario2']: userd})
-        setChecador(!checador)
+    const handleSubmmit = (d) => {
+        SetIniciarChat({...IniciarChat,['usuario2']: d})
+        setChecador(checador+1)
         console.log(IniciarChat)
     }
-    const navigate = useNavigate();
 
     const classes = useStyles();
 
@@ -85,18 +91,13 @@ const Chat = () => {
                     <List>
                         <ListItem button key="RemySharp">
                             <Button
-                                onClick={() => navigate('/Socket/HacerGrupo')}
-                            >Crear Grupo
-                            </Button>
-                            <Button
-                                onClick={() => navigate('/Socket/JoinGrupo')}
-                            >Unirse a un Grupo
-                            </Button>
+                            >Crear Grupo</Button>
                         </ListItem>
                     </List>
                     <Divider />
                     <Grid item xs={12} style={{padding: '10px'}}>
-                        <TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth />
+                        <TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth
+                        />
                     </Grid>
                     <Divider />
                     <List>
@@ -116,11 +117,14 @@ const Chat = () => {
                             </ListItem>
                         ))}
                     </List>
+                    {Anuncios.map((anuncio, index) => (
+                        <p key={index}>{anuncio}</p>
+                    ))}
                 </Grid>
-                <ChatSection data={IniciarChat} />
+                {checador === 0 ?<div>No Hay mensajes</div> : <ChatSection2 data={IniciarChat} />}
             </Grid>
         </div>
     );
 }
 
-export default Chat;
+export default Chat2;

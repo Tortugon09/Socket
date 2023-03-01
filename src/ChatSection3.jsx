@@ -41,14 +41,14 @@ const useStyles = makeStyles({
     }
 });
 
-export const ChatSection = ({data}) => {
+export const ChatSection3 = ({data}) => {
 
     const usuario2 = data.usuario2
-    const {socket, User, usuarios, IniciarChat, checador} = useContext(Context)
+    const {socket, User, usuarios, IniciarChat, checador, Grupo} = useContext(Context)
     const [mensajes, setMensajes] = useState([]);
     const [mensaje, setMensaje] = useState({
         usuario1: data.usuario1,
-        usuario2: usuario2,
+        nombre: Grupo,
         mensaje: {
             id:'',
             datos: ''
@@ -57,14 +57,13 @@ export const ChatSection = ({data}) => {
 
     useEffect(() => {
         console.log(mensaje)
-        console.log(data)
         console.log(usuario2)
     }, [mensaje, socket]);
 
     useEffect(() => {
         setMensaje({
-            usuario1: data.usuario1,
-            usuario2: data.usuario2,
+            usuario1: User,
+            nombre: Grupo,
             mensaje: {
                 id:'',
                 datos: ''
@@ -88,17 +87,17 @@ export const ChatSection = ({data}) => {
 
     useEffect(() => {
         if (socket) {
-            socket.on('mensaje_recibido', (datos) => {
-                console.log(datos)
-                setMensajes([...mensajes, datos]);
-                console.log(datos)
+            socket.on('mensaje_grupal', (datos) => {
+                const kg = {datos}
+                setMensajes([...mensajes,datos]);
+                console.log(mensajes)
             });
         }
     }, [mensajes, socket]);
 
     const enviarMensaje = e => {
         e.preventDefault()
-        socket.emit('enviar_mensaje', mensaje);
+        socket.emit('enviar_mensaje_grupal', mensaje);
         console.log(mensaje)
         setMensaje({...mensaje,['mensaje']: {['id']: User, ['datos']: ''}});
     }

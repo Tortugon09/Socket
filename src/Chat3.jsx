@@ -18,6 +18,7 @@ import {Button} from "@material-ui/core";
 import * as React from "react";
 import {ChatSection} from "./ChatSection.jsx";
 import {useNavigate} from "react-router-dom";
+import {ChatSection3} from "./ChatSection3.jsx";
 
 const useStyles = makeStyles({
     table: {
@@ -41,8 +42,9 @@ const useStyles = makeStyles({
 
 
 
-const Chat = () => {
-    const {socket, User, usuarios, setChecador, checador} = useContext(Context)
+const Chat3 = () => {
+    const {socket, User, usuarios, setChecador, checador, Grupo} = useContext(Context)
+    const [Anuncios, setAnuncios] = useState([])
     const [IniciarChat, SetIniciarChat] = useState({
         'usuario1': User,
         'usuario2': ''
@@ -51,9 +53,12 @@ const Chat = () => {
 
     useEffect(() => {
         if (socket) {
-            socket.emit('obtener_conversaciones', IniciarChat);
+            socket.on('mensaje_grupal', (datos) => {
+                setAnuncios([...Anuncios, datos]);
+                console.log(datos)
+            })
         }
-    }, [IniciarChat, socket]);
+    }, [checador, socket]);
 
 
     const handleSubmmit = (userd) => {
@@ -69,7 +74,7 @@ const Chat = () => {
         <div style={{height: '100vh'}}>
             <Grid container>
                 <Grid item xs={12} >
-                    <Typography variant="h5" className="header-message">Chat</Typography>
+                    <Typography variant="h5" className="header-message">{Grupo}</Typography>
                 </Grid>
             </Grid>
             <Grid container component={Paper} className={classes.chatSection}>
@@ -87,10 +92,6 @@ const Chat = () => {
                             <Button
                                 onClick={() => navigate('/Socket/HacerGrupo')}
                             >Crear Grupo
-                            </Button>
-                            <Button
-                                onClick={() => navigate('/Socket/JoinGrupo')}
-                            >Unirse a un Grupo
                             </Button>
                         </ListItem>
                     </List>
@@ -116,11 +117,14 @@ const Chat = () => {
                             </ListItem>
                         ))}
                     </List>
+                    {Anuncios.map((anuncio, index) => (
+                        <p key={index}>{anuncio}</p>
+                    ))}
                 </Grid>
-                <ChatSection data={IniciarChat} />
+                <ChatSection3 data={IniciarChat} />
             </Grid>
         </div>
     );
 }
 
-export default Chat;
+export default Chat3;
